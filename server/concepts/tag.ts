@@ -55,7 +55,7 @@ export default class TagConcept {
   //}
 
   async remove(_id: ObjectId) {
-    await this.tags.deleteOne({ _id });
+    await this.tagged.deleteOne({ _id });
     return { msg: "Tag successfully removed from post!" };
   }
 

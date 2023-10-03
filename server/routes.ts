@@ -191,6 +191,46 @@ class Routes {
     await Save.isSaveAuthor(user, save_id);
     return await Save.unsave(user, save_id);
   }
+
+  @Router.post("/notes/:id")
+  async createNote(session: WebSessionDoc, post_id: ObjectId) {
+    throw Error("not implemented yet");
+  }
+
+  @Router.put("/notes/:id")
+  async editNote(session: WebSessionDoc, note_id: ObjectId) {
+    throw Error("not implemented yet");
+  }
+
+  @Router.delete("/notes/:id")
+  async deleteNote(session: WebSessionDoc, note_id: ObjectId) {
+    throw Error("not implemented yet");
+  }
+
+  @Router.get("/match")
+  async findPosts(query: Set<string>) {
+    throw Error("not implemented yet");
+  }
+
+  @Router.get("/feature")
+  async getFeatured() {
+    throw Error("not implemented yet");
+  }
+
+  @Router.post("/feature")
+  async feature(session: WebSessionDoc, post_id: ObjectId) {
+    throw Error("not implemented yet");
+  }
+
+  @Router.delete("/feature")
+  async unfeature(session: WebSessionDoc, post_id: ObjectId) {
+    throw Error("not implemented yet");
+  }
+
+  @Router.post("/feature")
+  async setTheme(theme: string) {
+    throw Error("not implemented yet");
+  }
 }
 
 export default getExpressRouter(new Routes());
