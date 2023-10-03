@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, User, WebSession } from "./app";
+import { Friend, Post, Tag, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -135,6 +135,42 @@ class Routes {
     const user = WebSession.getUser(session);
     const fromId = (await User.getUserByUsername(from))._id;
     return await Friend.rejectRequest(fromId, user);
+  }
+
+  @Router.post("/tags")
+  async createTag(name: string) {
+    const created = await Tag.create(name, true);
+    return { msg: created.msg, tag: name };
+  }
+
+  @Router.get("/tags")
+  async getTags() {
+    //let tags;
+    //if (author) {
+    //  const id = (await User.getUserByUsername(author))._id;
+    //  posts = await Post.getByAuthor(id);
+    //} else {
+    //  posts = await Post.getPosts({});
+    //}
+    return await Tag.getTags({});
+  }
+
+  @Router.post("/tags/:post")
+  async addTag(session: WebSessionDoc, post_id: ObjectId, tag_id: ObjectId) {
+    const user = WebSession.getUser(session);
+    await Post.isAuthor(user, post_id);
+    return await Tag.addTagToPost(post_id, tag_id);
+  }
+
+  @Router.get("/tags/:id")
+  async getTaggedPosts(tag_id?: ObjectId) {
+    let tagged_posts;
+    if (tag_id) {
+      tagged_posts = await Tag.getTaggedPosts({ tag_id: tag_id });
+    } else {
+      tagged_posts = await Tag.getTaggedPosts({});
+    }
+    return tagged_posts;
   }
 }
 

@@ -2,6 +2,7 @@ import { Filter, ObjectId } from "mongodb";
 
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { NotAllowedError, NotFoundError } from "./errors";
+import { TagDoc } from "./tag";
 
 export interface PostOptions {
   backgroundColor?: string;
@@ -11,6 +12,7 @@ export interface PostDoc extends BaseDoc {
   author: ObjectId;
   content: string;
   options?: PostOptions;
+  tags?: Set<TagDoc>;
 }
 
 export default class PostConcept {
@@ -61,6 +63,14 @@ export default class PostConcept {
         throw new NotAllowedError(`Cannot update '${key}' field!`);
       }
     }
+  }
+
+  async getById(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    if (!post) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
+    return post;
   }
 }
 

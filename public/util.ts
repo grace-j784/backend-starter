@@ -77,6 +77,30 @@ const operations: operation[] = [
     method: "DELETE",
     fields: { id: "input" },
   },
+  {
+    name: "Create Tag",
+    endpoint: "/api/tags",
+    method: "POST",
+    fields: { name: "input" },
+  },
+  {
+    name: "Get Tags",
+    endpoint: "/api/tags",
+    method: "GET",
+    fields: {},
+  },
+  {
+    name: "Add Tag to Post",
+    endpoint: "/api/tags/:post",
+    method: "POST",
+    fields: { post_id: "input", tag_id: "input" },
+  },
+  {
+    name: "Get Tagged Posts",
+    endpoint: "/api/tags/:id",
+    method: "GET",
+    fields: { tag_id: "input" },
+  },
 ];
 
 // Do not edit below here.
