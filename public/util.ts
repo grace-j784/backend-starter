@@ -101,6 +101,24 @@ const operations: operation[] = [
     method: "GET",
     fields: { tag_id: "input" },
   },
+  {
+    name: "Get Saved Posts",
+    endpoint: "/api/saves/",
+    method: "GET",
+    fields: {},
+  },
+  {
+    name: "Save Post",
+    endpoint: "/api/saves/:id",
+    method: "POST",
+    fields: { post_id: "input" },
+  },
+  {
+    name: "Un-Save Post",
+    endpoint: "/api/saves/:id",
+    method: "DELETE",
+    fields: { save_id: "input" },
+  },
 ];
 
 // Do not edit below here.

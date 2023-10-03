@@ -2,7 +2,6 @@ import { Filter, ObjectId } from "mongodb";
 
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { NotAllowedError, NotFoundError } from "./errors";
-import { TagDoc } from "./tag";
 
 export interface PostOptions {
   backgroundColor?: string;
@@ -12,7 +11,6 @@ export interface PostDoc extends BaseDoc {
   author: ObjectId;
   content: string;
   options?: PostOptions;
-  tags?: Set<TagDoc>;
 }
 
 export default class PostConcept {

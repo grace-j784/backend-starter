@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, Tag, User, WebSession } from "./app";
+import { Friend, Post, Save, Tag, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -171,6 +171,25 @@ class Routes {
       tagged_posts = await Tag.getTaggedPosts({});
     }
     return tagged_posts;
+  }
+
+  @Router.get("/saves")
+  async getSavedPosts(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    return await Save.getSaved({ save_author: user });
+  }
+
+  @Router.post("/saves/:id")
+  async savePost(session: WebSessionDoc, post_id: ObjectId, options?: PostOptions) {
+    const user = WebSession.getUser(session);
+    return await Save.save(user, post_id, options);
+  }
+
+  @Router.delete("/saves/:id")
+  async unsavePost(session: WebSessionDoc, save_id: ObjectId) {
+    const user = WebSession.getUser(session);
+    await Save.isSaveAuthor(user, save_id);
+    return await Save.unsave(user, save_id);
   }
 }
 
