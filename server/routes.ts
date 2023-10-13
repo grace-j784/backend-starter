@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, Save, Tag, User, WebSession } from "./app";
+import { Post, Save, Tag, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -90,7 +90,7 @@ class Routes {
     return Post.delete(_id);
   }
 
-  @Router.get("/friends")
+  /* @Router.get("/friends")
   async getFriends(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
     return await User.idsToUsernames(await Friend.getFriends(user));
@@ -135,7 +135,7 @@ class Routes {
     const user = WebSession.getUser(session);
     const fromId = (await User.getUserByUsername(from))._id;
     return await Friend.rejectRequest(fromId, user);
-  }
+  } */
 
   @Router.post("/tags")
   async createTag(name: string) {
@@ -156,21 +156,39 @@ class Routes {
   }
 
   @Router.post("/tags/:post")
-  async addTag(session: WebSessionDoc, post_id: ObjectId, tag_id: ObjectId) {
+  async addPublicTag(session: WebSessionDoc, make_public: string, post_id: ObjectId, tag_id: ObjectId) {
     const user = WebSession.getUser(session);
-    await Post.isAuthor(user, post_id);
-    return await Tag.addTagToPost(post_id, tag_id);
+    if (make_public === "yes") {
+      await Post.isAuthor(user, post_id);
+      return await Tag.addTagToPost(post_id, tag_id, user, false);
+    } else {
+      return await Tag.addTagToPost(post_id, tag_id, user, true);
+    }
   }
 
   @Router.get("/tags/:id")
-  async getTaggedPosts(tag_id?: ObjectId) {
+  async getTaggedPosts(tag_type: string, tag_id?: ObjectId) {
+    let privacy;
+    if (tag_type === "private") {
+      privacy = true;
+    } else if (tag_type === "public") {
+      privacy = false;
+    } else {
+      return { msg: "Invalid tag_type input, please input private or public" };
+    }
     let tagged_posts;
     if (tag_id) {
-      tagged_posts = await Tag.getTaggedPosts({ tag_id: tag_id });
+      tagged_posts = await Tag.getTaggedPosts({ tag_id: tag_id, is_private: privacy });
     } else {
-      tagged_posts = await Tag.getTaggedPosts({});
+      tagged_posts = await Tag.getTaggedPosts({ is_private: privacy });
     }
     return tagged_posts;
+  }
+
+  @Router.delete("/tags/:id")
+  async removeTagFromPost(session: WebSessionDoc, tag_id: ObjectId, post_id: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Tag.removeTaggedByAuthor(user, tag_id, post_id);
   }
 
   @Router.get("/saves")

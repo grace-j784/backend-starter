@@ -90,16 +90,22 @@ const operations: operation[] = [
     fields: {},
   },
   {
-    name: "Add Tag to Post",
+    name: "Add Tag to Post (input yes to make public, can only make public if author)",
     endpoint: "/api/tags/:post",
     method: "POST",
-    fields: { post_id: "input", tag_id: "input" },
+    fields: { make_public: "input", post_id: "input", tag_id: "input" },
   },
   {
-    name: "Get Tagged Posts",
+    name: "Get Tagged Posts (for tag_type, input private to get private tagged posts, and input public to get public ones)",
     endpoint: "/api/tags/:id",
     method: "GET",
-    fields: { tag_id: "input" },
+    fields: { tag_type: "input", tag_id: "input" },
+  },
+  {
+    name: "Remove Tag From Post",
+    endpoint: "/api/tags/:id",
+    method: "DELETE",
+    fields: { tag_id: "input", post_id: "input" },
   },
   {
     name: "Get Saved Posts",

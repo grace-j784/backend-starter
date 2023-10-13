@@ -1,7 +1,7 @@
 import { Filter, ObjectId } from "mongodb";
 
 import DocCollection, { BaseDoc } from "../framework/doc";
-import { NotFoundError } from "./errors";
+import { NotAllowedError, NotFoundError } from "./errors";
 
 //export interface PostOptions {
 //  backgroundColor?: string;
@@ -15,6 +15,8 @@ export interface TagDoc extends BaseDoc {
 export interface TaggedPostDoc extends BaseDoc {
   tag_id: ObjectId;
   post_id: ObjectId;
+  author: ObjectId;
+  is_private: boolean;
 }
 
 export default class TagConcept {
@@ -26,9 +28,13 @@ export default class TagConcept {
     return { msg: "Tag successfully created!", post: await this.tags.readOne({ _id }) };
   }
 
-  async addTagToPost(post_id: ObjectId, tag_id: ObjectId) {
-    await this.tagged.createOne({ tag_id, post_id });
-    return { msg: "Tag successfully added to post!" };
+  async addTagToPost(post_id: ObjectId, tag_id: ObjectId, author: ObjectId, is_private: boolean) {
+    await this.tagged.createOne({ tag_id, post_id, author, is_private });
+    if (is_private) {
+      return { msg: "Private tag successfully added to post!" };
+    } else {
+      return { msg: "Public tag successfully added to post!" };
+    }
   }
 
   async getTags(query: Filter<TagDoc>) {
@@ -54,6 +60,16 @@ export default class TagConcept {
   //  return tags;
   //}
 
+  async removeTaggedByAuthor(user: ObjectId, tag_id: ObjectId, post_id: ObjectId) {
+    const tag_assigns = await this.tagged.readMany({ tag_id, post_id, author: user });
+    if (tag_assigns.length === 0) {
+      throw new NotFoundError(`Tag ${tag_id} on post ${post_id} does not exist, or you are not the author of this tag assignment!`);
+    }
+    for (const tag_assign of tag_assigns) {
+      return await this.remove(tag_assign._id);
+    }
+  }
+
   async remove(_id: ObjectId) {
     await this.tagged.deleteOne({ _id });
     return { msg: "Tag successfully removed from post!" };
@@ -66,5 +82,15 @@ export default class TagConcept {
       sort: { dateUpdated: -1 },
     });
     return tagged_posts;
+  }
+}
+
+export class AuthorNotMatchError extends NotAllowedError {
+  constructor(
+    public readonly author: ObjectId,
+    public readonly tag_id: ObjectId,
+    public readonly post_id: ObjectId,
+  ) {
+    super("{0} is not the author of tag assignment from tag {1} to post {2}!", author, tag_id, post_id);
   }
 }
