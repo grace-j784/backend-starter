@@ -143,6 +143,24 @@ const operations: operation[] = [
     method: "GET",
     fields: { keyword: "input" },
   },
+  {
+    name: "See Featured Posts",
+    endpoint: "/api/feature/",
+    method: "GET",
+    fields: {},
+  },
+  /* {
+    name: "Feature Post",
+    endpoint: "/api/feature/",
+    method: "POST",
+    fields: { post_id: "input" },
+  },
+  {
+    name: "Feature Post",
+    endpoint: "/api/feature/",
+    method: "DELETE",
+    fields: { feature_id: "input" },
+  }, */
 ];
 
 // Do not edit below here.

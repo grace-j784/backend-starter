@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Post, Save, Tag, User, WebSession } from "./app";
+import { Feature, Post, Save, Tag, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -245,23 +245,23 @@ class Routes {
 
   @Router.get("/feature")
   async getFeatured() {
-    throw Error("not implemented yet");
+    return await Feature.getFeatured({});
   }
 
   @Router.post("/feature")
   async feature(session: WebSessionDoc, post_id: ObjectId) {
-    throw Error("not implemented yet");
+    return await Feature.feature(post_id);
   }
 
   @Router.delete("/feature")
-  async unfeature(session: WebSessionDoc, post_id: ObjectId) {
-    throw Error("not implemented yet");
+  async unfeature(session: WebSessionDoc, feature_id: ObjectId) {
+    return await Feature.unfeature(feature_id);
   }
 
-  @Router.post("/feature")
+  /* @Router.post("/feature")
   async setTheme(theme: string) {
     throw Error("not implemented yet");
-  }
+  } */
 }
 
 export default getExpressRouter(new Routes());
