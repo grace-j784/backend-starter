@@ -114,16 +114,34 @@ const operations: operation[] = [
     fields: {},
   },
   {
+    name: "Get Saved Posts with Notes",
+    endpoint: "/api/saves/notes",
+    method: "GET",
+    fields: {},
+  },
+  {
     name: "Save Post",
     endpoint: "/api/saves/:id",
     method: "POST",
-    fields: { post_id: "input" },
+    fields: { post_id: "input", notes: "input" },
+  },
+  {
+    name: "Edit Saved Post Notes",
+    endpoint: "/api/saves/",
+    method: "PATCH",
+    fields: { save_id: "input", content: "input" },
   },
   {
     name: "Un-Save Post",
-    endpoint: "/api/saves/:id",
+    endpoint: "/api/saves/",
     method: "DELETE",
     fields: { save_id: "input" },
+  },
+  {
+    name: "Search Content Keyword (i.e. ingredient, etc.)",
+    endpoint: "/api/match/",
+    method: "GET",
+    fields: { keyword: "input" },
   },
 ];
 

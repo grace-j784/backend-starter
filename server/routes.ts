@@ -197,20 +197,33 @@ class Routes {
     return await Save.getSaved({ save_author: user });
   }
 
-  @Router.post("/saves/:id")
-  async savePost(session: WebSessionDoc, post_id: ObjectId, options?: PostOptions) {
+  @Router.get("/saves/notes")
+  async getSavedPostsWithNotes(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    return await Save.save(user, post_id, options);
+    return await Save.getSaved({ save_author: user, notes: { $not: { $type: 10 }, $exists: true } });
   }
 
-  @Router.delete("/saves/:id")
+  @Router.post("/saves/:id")
+  async savePost(session: WebSessionDoc, post_id: ObjectId, notes?: string, options?: PostOptions) {
+    const user = WebSession.getUser(session);
+    return await Save.save(user, post_id, notes, options);
+  }
+
+  @Router.patch("/saves")
+  async editSavedPostsNotes(session: WebSessionDoc, save_id: ObjectId, content: string) {
+    const user = WebSession.getUser(session);
+    await Save.isSaveAuthor(user, save_id);
+    return await Save.editNotes(save_id, content);
+  }
+
+  @Router.delete("/saves")
   async unsavePost(session: WebSessionDoc, save_id: ObjectId) {
     const user = WebSession.getUser(session);
     await Save.isSaveAuthor(user, save_id);
     return await Save.unsave(user, save_id);
   }
 
-  @Router.post("/notes/:id")
+  /*   @Router.post("/notes/:id")
   async createNote(session: WebSessionDoc, post_id: ObjectId) {
     throw Error("not implemented yet");
   }
@@ -223,11 +236,11 @@ class Routes {
   @Router.delete("/notes/:id")
   async deleteNote(session: WebSessionDoc, note_id: ObjectId) {
     throw Error("not implemented yet");
-  }
+  } */
 
   @Router.get("/match")
-  async findPosts(query: Set<string>) {
-    throw Error("not implemented yet");
+  async findPostsByKeyword(keyword: string) {
+    return await Post.getPosts({ content: { $regex: keyword } });
   }
 
   @Router.get("/feature")
